@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Who's That Pokémon?</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 15px;
+        }
+        h1 { margin-bottom: 5px; }
+        .scoreboard { color: #444; margin-bottom: 15px; font-size: 15px; }
+        .card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            padding: 25px;
+            width: 320px;
+            text-align: center;
+        }
+        .sprite-box img {
+            width: 300px;
+            height: 300px;
+            image-rendering: pixelated;
+            background: #eee;
+            border-radius: 10px;
+        }
+        form.guess-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 18px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .btn-primary { background: #ef5350; color: white; }
+        .btn-secondary { background: #90a4ae; color: white; }
+        .action-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .feedback {
+            margin-top: 14px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .feedback.correct { color: #2e7d32; }
+        .feedback.wrong { color: #c62828; }
+        .feedback.revealed { color: #1565c0; }
+    </style>
+</head>
+<body>
+    <h1>Who's That Pokémon?</h1>
+    <div class="scoreboard">Score: {{ score }} &nbsp;·&nbsp; Streak: {{ streak }}</div>
+
+    <div class="card">
+        <div class="sprite-box">
+            <img src="{{ url_for('image') }}?v={{ revealed }}" alt="Mystery Pokémon">
+        </div>
+
+        {% if not revealed %}
+        <form class="guess-form" action="{{ url_for('guess') }}" method="post">
+            <input type="text" name="guess" placeholder="Who's that Pokémon?" autofocus autocomplete="off">
+            <button type="submit" class="btn-primary">Guess</button>
+        </form>
+        <form action="{{ url_for('reveal') }}" method="post">
+            <div class="action-row">
+                <button type="submit" class="btn-secondary" style="width:100%">Reveal</button>
+            </div>
+        </form>
+        {% else %}
+        <form action="{{ url_for('next_round') }}" method="post">
+            <div class="action-row">
+                <button type="submit" class="btn-primary" style="width:100%">Next Pokémon</button>
+            </div>
+        </form>
+        {% endif %}
+
+        {% if feedback %}
+        <div class="feedback {{ feedback_kind }}">{{ feedback }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
